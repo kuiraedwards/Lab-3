@@ -1,6 +1,5 @@
-
+// Worked with Keerthana Pullela
 // Kuira Edwards @02942519
-
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -20,31 +19,35 @@ int main(int argc, char **argv)
   int pid, pid2;
 
   char *cat_args[] = {"cat", "scores", NULL};
-  char *sort_args[] = {"sort", NULL, NULL}
+  char *sort_args[] = {"sort", NULL, NULL};
   char *grep_args[] = {"grep", "Lakers", NULL};
 
   // make a pipe (fds go in pipefd[0] and pipefd[1])
   if(argc < 1) {
-    printf("Please enter the grep area");
+    printf("Please enter the grep arg (e.g. \"Lakers or 28\")\n");
   }
+
   grep_args[1] = argv[1];
   pipe(pipefd);
 
   pid = fork();
 
-  if(pid == 0) {
-    pid2 = fork();
-    if(pid2 == 0) {
-    dup2(pipefd[0], 0);
-    close(pipefd[3]);
-    close(pipefd[1]);
-    close(pipefd[0]);
-    execvp("sort", sort_args);
-  }
-  else if (pid2 < 0) {
-    printf("error");
-  }
-  else {
+  if (pid == 0)
+    {
+      pid2 = fork();
+      if (pid2 == 0) {
+        dup2(pipefd[0], 0);
+        close(pipefd[3]);
+        close(pipefd[1]);
+        close(pipefd[0]);
+        execvp("sort", sort_args);
+      }
+
+      else if (pid2 < 0) {
+        printf("error");
+      }
+
+      else {
       // child gets here and handles "grep Villanova"
 
       // replace standard input with input part of pipe
